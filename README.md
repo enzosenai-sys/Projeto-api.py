@@ -1,183 +1,89 @@
-📁 Estrutura Final do Projeto
-📦 disney-api-explorer
-├── app.py               ← Código principal da aplicação
-├── requirements.txt     ← Dependências
-└── README.md            ← Documentação
+# Disney API Explorer 🧭
 
-✅ app.py
-import streamlit as st
-import requests
-import random
+Explore personagens do universo Disney de forma simples e interativa utilizando a API pública da Disney! Com um clique, você pode visualizar personagens, suas aparições em filmes, séries, parques e muito mais.
 
-API_URL = "https://api.disneyapi.dev/character"
+## Funcionalidades 🚀
 
-# Configuração da página
-st.set_page_config(page_title="Disney API Explorer", page_icon="🧭", layout="wide")
+- **Busca por Personagens**: Digite o nome de um personagem para filtrá-los facilmente.
+- **Surpreenda-me**: Clique para ser surpreendido com um personagem aleatório.
+- **Estatísticas**: Veja estatísticas sobre o total de personagens, filmes e séries.
+- **Detalhes do Personagem**: Exiba informações detalhadas como filmes, séries, aliados, inimigos e muito mais.
+- **Interface Interativa**: Interface simples e agradável com Streamlit.
 
-# Título principal
-st.markdown("# 🧭 Disney API Explorer")
-st.markdown("Explore personagens do universo Disney com um clique!")
+## Como Usar 📋
 
-# Requisição de dados
-response = requests.get(f"{API_URL}?page=1&pageSize=500")
-data = response.json()
-characters = data["data"]
+1. Clone o repositório:
+    ```bash
+    git clone https://github.com/seu_usuario/disney-api-explorer.git
+    cd diseny-api-explorer
+    ```
 
-# Dicionário para facilitar busca por nome
-char_dict = {c["name"]: c for c in characters}
+2. Instale as dependências:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-# Busca por nome
-with st.sidebar:
-    st.markdown("### 🔍 Buscar personagem")
-    search_query = st.text_input("Digite parte do nome:")
+3. Execute o aplicativo:
+    ```bash
+    streamlit run app.py
+    ```
 
-    if search_query:
-        filtered_chars = [c for c in characters if search_query.lower() in c["name"].lower()]
-        if filtered_chars:
-            selected_name = st.selectbox("Resultados:", [c["name"] for c in filtered_chars])
-            selected_char = next(c for c in filtered_chars if c["name"] == selected_name)
-        else:
-            st.warning("Nenhum personagem encontrado.")
-            selected_char = None
-    else:
-        selected_name = st.selectbox(
-            "Escolha um personagem:",
-            sorted(char_dict.keys()),
-            index=sorted(char_dict.keys()).index(st.session_state.get("selected_name", sorted(char_dict.keys())[0]))
-        )
-        selected_char = char_dict[selected_name]
+4. Abra seu navegador e acesse [http://localhost:8501](http://localhost:8501) para começar a explorar os personagens da Disney!
 
-    if st.button("🎲 Surpreenda-me!"):
-        selected_char = random.choice(characters)
-        st.session_state["selected_name"] = selected_char["name"]
-        st.rerun()
+## Tecnologias 🛠️
 
-    st.divider()
-    st.markdown("### 📊 Estatísticas")
-    total = len(characters)
-    films_count = sum(1 for c in characters if c["films"])
-    tv_count = sum(1 for c in characters if c["tvShows"])
-    st.write("👤 Total de personagens:", total)
-    st.write("🎬 Em filmes:", films_count)
-    st.write("📺 Em séries:", tv_count)
-    st.divider()
-    st.markdown("[🌍 API da Disney](https://disneyapi.dev/)")
+- **Streamlit**: Framework para criação de aplicativos interativos em Python.
+- **Requests**: Biblioteca para fazer requisições HTTP.
+- **API Disney**: API pública que fornece dados sobre personagens, filmes, séries e muito mais no universo Disney.
 
-st.divider()
+## Visão Geral do Código 💻
 
-if selected_char:
-    st.subheader(f"🎭 {selected_char['name']}")
+### Estrutura do Código
 
-    col1, col2 = st.columns([1, 2])
+1. **Configuração da Página**: 
+    - Usamos o `st.set_page_config` para definir o título e layout da página.
 
-    with col1:
-        if selected_char.get("imageUrl"):
-            st.image(selected_char["imageUrl"], width=250)
-        else:
-            st.info("Imagem não disponível.")
+2. **Requisição de Dados**: 
+    - Através da API pública da Disney (`https://api.disneyapi.dev/character`), obtemos os dados dos personagens e os armazenamos.
 
-    with col2:
-        st.markdown("#### 🎞️ Aparições")
-        st.write("**Filmes:**", ", ".join(selected_char.get("films", []) or ["Nenhum"]))
-        st.write("**Séries de TV:**", ", ".join(selected_char.get("tvShows", []) or ["Nenhuma"]))
-        st.write("**Curtas:**", ", ".join(selected_char.get("shortFilms", []) or ["Nenhum"]))
-        st.write("**Parques:**", ", ".join(selected_char.get("parkAttractions", []) or ["Nenhum"]))
+3. **Busca por Personagem**: 
+    - O usuário pode buscar por nome de personagem usando o `st.text_input` e um filtro dinâmico é aplicado.
 
-        st.markdown("#### 🧑‍🤝‍🧑 Relações")
-        st.write("**Aliados:**", ", ".join(selected_char.get("allies", []) or ["Nenhum"]))
-        st.write("**Inimigos:**", ", ".join(selected_char.get("enemies", []) or ["Nenhum"]))
+4. **Surpreenda-me**: 
+    - Um botão que ao ser pressionado escolhe um personagem aleatoriamente para exibição.
 
-    with st.expander("📦 Ver dados brutos (JSON)"):
-        st.json(selected_char)
+5. **Exibição dos Personagens**: 
+    - Informações detalhadas sobre o personagem selecionado, como filmes, séries, aliados, inimigos e muito mais.
 
-📄 requirements.txt
-streamlit>=1.25.0
-requests
+6. **Estatísticas**: 
+    - Exibimos informações como o total de personagens, quantos estão em filmes e séries de TV.
 
-📘 README.md
-# 🧭 Disney API Explorer
+### Exibição dos Dados
 
-Um aplicativo interativo feito com [Streamlit](https://streamlit.io/) que permite explorar personagens do universo Disney usando a API pública [DisneyAPI.dev](https://disneyapi.dev/).
+A informação do personagem inclui:
+- **Imagem** (se disponível)
+- **Filmes, séries, curtas e parques**
+- **Aliados e inimigos**
+- **Dados em formato JSON**
 
----
+## Exemplo de Interface 🌐
 
-## 🚀 Funcionalidades
+Ao executar o aplicativo, a interface permite que você:
+- Busque personagens diretamente pela caixa de busca.
+- Veja personagens em detalhes, com imagens e informações sobre suas aparições em filmes, séries e parques.
+- Explore dados brutos em formato JSON.
 
-- 🔍 **Busca por nome** de personagens Disney
-- 🎲 **Personagem aleatório** ("Surpreenda-me!")
-- 📊 **Estatísticas gerais** (total de personagens, aparições em filmes/séries)
-- 📷 **Imagem do personagem**, se disponível
-- 🎞️ Lista de **filmes, séries, curtas e atrações**
-- 🧑‍🤝‍🧑 **Relações**: aliados e inimigos
-- 📦 Visualização de **dados brutos (JSON)**
+## Imagens 🌟
 
----
+![Exemplo de Interface](https://link-para-sua-imagem.com/exemplo.jpg)
 
-## 🛠️ Tecnologias utilizadas
+## Contribuindo 🤝
 
-- Python 3.9+
-- Streamlit
-- Requests
-- [DisneyAPI.dev](https://disneyapi.dev)
+Sinta-se à vontade para contribuir com melhorias, correções ou novas funcionalidades. Basta fazer um fork do repositório e enviar um pull request!
 
----
+## Licença 📄
 
-## ▶️ Como executar localmente
-
-1. **Clone este repositório**:
-
-```bash
-git clone https://github.com/seu-usuario/disney-api-explorer.git
-cd disney-api-explorer
+Este projeto está licenciado sob a Licença MIT. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 
-Crie um ambiente virtual (opcional):
 
-python -m venv venv
-source venv/bin/activate  # Linux/macOS
-venv\Scripts\activate     # Windows
-
-
-Instale as dependências:
-
-pip install -r requirements.txt
-
-
-Execute o app:
-
-streamlit run app.py
-
-🌐 Fonte de dados
-
-Este projeto utiliza a API gratuita:
-🔗 https://disneyapi.dev
-
-Nota: A API não é oficial da Disney. Use apenas para fins educacionais ou protótipos.
-
-📂 Estrutura do Projeto
-📦 disney-api-explorer
-├── app.py               # Aplicação principal em Streamlit
-├── requirements.txt     # Dependências do projeto
-└── README.md            # Documentação do projeto
-
-🤝 Contribuições
-
-Contribuições são bem-vindas!
-Sinta-se à vontade para abrir issues, sugerir melhorias ou enviar PRs.
-
-📄 Licença
-
-Este projeto está licenciado sob a MIT License.
-Veja o arquivo LICENSE
- para mais detalhes.
-
-✨ Autor
-
-Feito com ❤️ por Seu Nome
-
-
----
-
-Se quiser, posso empacotar tudo isso num `.zip` para você baixar ou ajudar a publicar no GitHub ou no **Streamlit Community Cloud**.
-
-Deseja isso?
